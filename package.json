@@ -1,0 +1,21 @@
+{
+  "name": "coin-indexer",
+  "version": "0.0.1",
+  "description": "A node.js indexer server for Substrate based chain",
+  "main": "index.js",
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "axios": "0.21.1",
+    "chai": "^4.3.4",
+    "pg": "^8.6.0",
+    "sequelize": "^6.6.2"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.2",
+    "sequelize-cli": "^6.2.0"
+  },
+  "scripts": {
+    "test": "mocha src/test/*.js"
+  }
+}
