@@ -1,31 +1,22 @@
 #!/bin/env node
+const Bree = require('bree');
+const Cabin = require('cabin');
+const path = require('path');
 
-const Indexer = require('@open-web3/indexer');
+const logger = new Cabin();
 
-const run = async () => {
-  const dbUrl = '<db-url>';
-  const dbOptions = {
-    logging: false,
-    dialect: 'postgres',
-    dialectOptions: {
-      ssl: {
-        rejectUnauthorized: false        
-      },
-    }
-  };
-  const wsUrl = 'ws://127.0.0.1:9944';
+/**
+ * bree instance that generates a cron job with a schedule
+ */
+const bree = new Bree({
+	logger,
+	jobs: [
+		{
+			name: 'price-indexer',
+			interval: 'at 11:50 pm',
+			path: path.resolve(__dirname, './src/index.js')
+		}
+	]
+})
 
-  const indexer = await Indexer.indexer.create({
-    dbUrl,
-    dbOptions,
-    wsUrl,
-    sync: true
-  });
-
-  await indexer.start(); 
-};
-
-run().catch((err) => {
-  console.error(err);
-  throw new Error(err.message)
-});
+bree.start();

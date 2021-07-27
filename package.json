@@ -7,7 +7,10 @@
   "license": "Apache-2.0",
   "dependencies": {
     "axios": "0.21.1",
+    "bree": "^6.2.1",
+    "cabin": "^9.0.4",
     "chai": "^4.3.4",
+    "graceful": "^1.0.2",
     "pg": "^8.6.0",
     "sequelize": "^6.6.2"
   },
@@ -16,6 +19,6 @@
     "sequelize-cli": "^6.2.0"
   },
   "scripts": {
-    "test": "mocha src/test/*.js"
+    "test": "mocha jobs/test/*.js"
   }
 }

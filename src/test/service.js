@@ -12,6 +12,6 @@ describe.only("test api service", function() {
         yesterday.setDate(today.getDate() - 1);
         const response = await api.getCoinHistory(coins[0], yesterday, today, 1000);
         console.log(`data: ${response}`)
-        assert.isArray(response.data[], "Experienced error");
+        assert.isArray(response.data[coins[0]], "Experienced error");
     })
 })

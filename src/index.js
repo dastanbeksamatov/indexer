@@ -13,20 +13,15 @@ Iterate trough all symbols once a day:
 - From beginning of data
 */
 const PriceIndexer = require("./indexer");
-const { coins } = require("./models");
+const { coins, fiats } = require("./models");
 
-async function main() {
+(async () => {
     const dbUrl = 'postgres://dastansamat:dastansamat@127.0.0.1:5432/pricesdb';
     const dbOptions = {
         logging: false,
         dialect: "postgres"
-    };        
+    };
     const indexer = await PriceIndexer.create(dbUrl, dbOptions, true, coins);
     
     await indexer.start();
-    process.exit(1);
-}
-
-main().catch((err) => {
-    console.error(`Encountered error: ${err}`);
 })

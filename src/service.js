@@ -3,12 +3,10 @@ const axios = require('axios').default;
 /**
  * @description Class representinng Coincodex API 
  */
-class Coincodex {
+class API {
     constructor() {
-        let service = axios.create({ baseURL: 'https://coincodex.com/api/coincodex'});
-        service.interceptors.response.use(this._handleSuccess, this._handleError);
-        this.service = service;
-        this.url = '';
+        this.coinUrl = 'https://coincodex.com/api/coincodex';
+        this.fiatUrl = 'https://api.currencylayer.com';
     }
     /**
      * Gets an array coin states of format [[timestamp, price, volume], ...]
@@ -21,14 +19,30 @@ class Coincodex {
         from = this._handleDate(from, offset);
         to = this._handleDate(to, offset);
         const url = `${symbol}/${from}/${to}/${samples}`;
-        console.log(`querying: ${url}`);
-        const response = await this.service.get(`/get_coin_history/${url}`);
+        const response = await axios.get(`/get_coin_history/${url}`, {baseURL: this.coinUrl});
         if(response.status !== 200) {
             return { error: response.statusText }
         }
         return { data: response.data }
     }
 
+    async getFiatHistory(symbols, from = new Date()) {
+        from = this._handleDate(from);
+        const accesKey = process.env.ACCESS_KEY;
+        const response = await axios.get('/historical', {
+            baseURL: this.fiatUrl,
+            params: {
+                acces_key: accesKey,
+                format: 1,
+                date: from,
+                currencies: symbols.join(','),
+            }
+        });
+        if(response.status !== 200) {
+            return { error: response.statusText }
+        }
+        return { data: response.data }
+    }
     /**
      * Makes sure date is in correct format for request
      * YYYY-MM-DD - format
@@ -46,24 +60,6 @@ class Coincodex {
         }
         return date.toISOString().slice(0, 10);
     }
-
-    /**
-     * 
-     * @param {*} response response from the request
-     * @returns axios response object
-     */
-    _handleSuccess(response) {
-        return response;
-    }
-
-    /**
-     * 
-     * @param {*} error error object
-     * @returns axios error object
-     */
-    _handleError(error) {
-        return Promise.reject(error);
-    }
 }
 
-module.exports = Coincodex;
+module.exports = API;
