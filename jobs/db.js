@@ -61,7 +61,7 @@ function init(db) {
 
     Status.init(
         {
-            date: DataTypes.DATE,
+            date: DataTypes.STRING,
             status: DataTypes.BOOLEAN
         },
         {sequelize: db}

@@ -1,4 +1,4 @@
-# Substrate chain indexer
+# Crypto price indexer
 
 This is an example of using [`@open-web3/indexer`](https://github.com/open-web3-stack/open-web3.js) indexer for a `Substrate` based chain.
 
