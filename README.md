@@ -1,6 +1,6 @@
 # Crypto price indexer
 
-This is an example of using [`@open-web3/indexer`](https://github.com/open-web3-stack/open-web3.js) indexer for a `Substrate` based chain.
+This script is used to index crypto and fiat price everyday. 
 
 ## Setup
 
@@ -12,27 +12,48 @@ Install dependencies:
 
 `npm install`
 
-## Launch Substrate sync node
+## Env variables
 
-For the indexer to work, you first need to run a local sync node of a Substrate based chain. This could be `Kusama`, `Polkadot` or a local node. For example, to run the `Kusama` sync node, run the following code:
+### API key
+For indexing fiat, [**CurrencyLayer** API](https://api.currencylayer.com) is used and you will need to get `access key` to make requests to it.
 
-```
-curl https://getsubstrate.io -sSf | bash
-git clone https://github.com/paritytech/polkadot kusama
-cd kusama
-./scripts/init.sh
-cargo build --release
-./target/release/polkadot --name "Kusama-node" --rpc-cors all --pruning=archive --chain=kusama
-```
+Set your access key, if you want to index fiat currencies.
 
-To index the `Polkadot` node, replace `--chain=kusama` with `--chain=polkadot`
+`export ACCESS_KEY=<your-access-key>`
 
-For more information, refer to: https://wiki.polkadot.network/docs/maintain-wss/
+
+### Database url
+
+Also, make sure to set `DB_URL` with the valid url of your running `PostgreSQL` database:
+
+`export DB_URL=<your-db-url>`
 
 ## Run
 
-In a separate terminal run the script:
+`price-indexer` can be run in two ways:
+
+### crontab  
+`cron` also known as `cron job` is a time-based job scheduler.  
+With the use of crontab, we can configure to run our script at certain time every day.
+
+To create a cron job that runs this script every day at `00:05 am`, run:  
+```bash
+crontab -e
+```
+Inside the interactive editor, paste the following line (making sure that your have valid path to the `indexer`):
+
+`05 00 * * * cd /<path-to-indexer> && node jobs/price-indexer.js >/tmp/stdout.log 2>/tmp/stderr.log`
+
+This will index all the price feed for the past day.
+
+#### What do the above commands mean?
+- `50 23 * * *` - scheduled execution time of the job
+- `cd /<path-to-indexer> && node jobs/price-indexer.js` - runs the indexing script
+- `>/tmp/stdout.log 2>/tmp/stderr.log` - pipelines error and std output to log files
+
+### **NodeJs**  
+Another way to run this script is to launch it with `cron-like` scheduler [`bree`](https://github.com/breejs/bree). The following command should start the indexer.
 
 `node index.js`
 
-This should start the indexer, and will log each indexed block in the terminal.
+However, for the indexer to run indefinetely, you will need to keep the `NodeJs` script running for as long as you need indexing. For this reason, it is recommended to use `crontab` for job scheduling.
