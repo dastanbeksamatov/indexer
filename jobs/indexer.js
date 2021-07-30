@@ -1,7 +1,7 @@
 const { Sequelize } = require("sequelize");
 const {init, coins, fiats, Status} = require("./db");
 const API = require("./service");
-const { handleDate } = require("./utils");
+const { handleDate, unixTimeToDate } = require("./utils");
 
 /**
  * Class that represents price indexer for coins
@@ -46,32 +46,32 @@ class PriceIndexer {
     /**
      * Start indexing prices
      * @param {*} symbol Coin symbol
-     * @param {*} from start date
-     * @param {*} to end date
+     * @param {*} date start date
      * @param {*} samples number of samples
      */
-    async start(from = new Date(), samples = 1000) {
-        from = handleDate(from);
-        const isPopulated = await this._checkPopulated(from);
+    async start(date = new Date(), samples = 1000) {
+        date = handleDate(date);
+        const yesterday = handleDate(date, true);
+        const isPopulated = await this._checkPopulated(yesterday);
         if(isPopulated) {
-            console.log('already indexed for: ' + from);
+            console.log('already indexed for: ' + yesterday);
             return ;
         }
         try {
-            console.log('start indexing for date: ' + from);
+            console.log('start indexing for date: ' + yesterday);
             console.log('start indexing fiats...');
-            await this.pushFiats(from);
+            await this.pushFiats(yesterday);
 
             console.log('start indexing crypto...' + this.coinSymbols.join(','));
             await Promise.all(this.coinSymbols.map(async (symbol) => {
-                const response = await this.api.getCoinHistory(symbol, from, samples);
+                const response = await this.api.getCoinHistory(symbol, date, samples);
                 if(response.error) {
                     return this._handleError(response.error);
                 }
                 await this.pushCoin(symbol, response.data);
             })
             ).then(async () => {
-                await this.syncStatus(from, 1);
+                await this.syncStatus(yesterday, 1);
                 return ;
             })
         } catch (err) {
@@ -97,6 +97,7 @@ class PriceIndexer {
                     fiats[fiat].upsert(
                         {
                             timestamp: response.data['timestamp'],
+                            utc_date: unixTimeToDate(response.data['timestamp']),
                             price_usd: response.data['quotes'][`${fiat}USD`],
                         },
                         {
@@ -162,6 +163,7 @@ class PriceIndexer {
             requests.push(
                 {
                     timestamp,
+                    utc_date: unixTimeToDate(timestamp),
                     coinprice_usd,
                     volume_24h
                 }

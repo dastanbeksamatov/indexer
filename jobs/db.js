@@ -5,6 +5,10 @@ const _coinScheme = {
         type: DataTypes.BIGINT,
         allowNull: false,
     },
+    utc_date: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     coinprice_usd: {
         type: DataTypes.FLOAT,
         allowNull: false,
@@ -19,6 +23,10 @@ const _fiatScheme = {
     timestamp: {
         type: DataTypes.BIGINT,
         allowNull: false,
+    },
+    utc_date: {
+        type: DataTypes.STRING,
+        allowNull: true,
     },
     price_usd: {
         type: DataTypes.FLOAT,

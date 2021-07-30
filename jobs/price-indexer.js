@@ -16,7 +16,7 @@ const PriceIndexer = require("./indexer");
 const { coins, fiats } = require("./db");
 
 async function startIndexer() {
-    const dbUrl = 'postgres://dastansamat:dastansamat@127.0.0.1:5432/pricesdb';
+    const dbUrl = process.env.DB_URL;
     const dbOptions = {
         logging: false,
         dialect: "postgres"
