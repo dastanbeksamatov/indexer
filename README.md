@@ -32,7 +32,7 @@ Also, make sure to set `DB_URL` with the valid url of your running `PostgreSQL` 
 
 `price-indexer` can be run in two ways:
 
-### crontab  (Recommended)
+### crontab  (Recommended) :construction:
 `cron` also known as `cron job` is a time-based job scheduler.  
 With the use of crontab, we can configure to run our script at certain time every day.
 
