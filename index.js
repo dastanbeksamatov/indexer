@@ -1,4 +1,4 @@
-#!/bin/env node
+#!/bin/env sh
 const Bree = require('bree');
 const Cabin = require('cabin');
 
@@ -9,7 +9,7 @@ const bree = new Bree({
 	jobs: [
 		{
 			name: 'price-indexer',
-			interval: 'every 15 seconds',
+			interval: 'every day at 03:15 am',
 		}
 	]
 })
