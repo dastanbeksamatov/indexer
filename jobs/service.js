@@ -14,7 +14,7 @@ class API {
      * @param {*} date indexing day
      * @param {*} samples number of samples
      */
-    async getCoinHistory(symbol, date = new Date(), samples = 1000) {
+    async getCoinHistory(symbol, date, samples = 1000) {
         const from = handleDate(date, true);
         const to = handleDate(date);
         const url = `${symbol}/${from}/${to}/${samples}`;
@@ -31,13 +31,12 @@ class API {
      * @param {*} date - defaults to now
      * @returns 
      */
-    async getFiatHistory(symbol, date = new Date()) {
+    async getFiatHistory(symbol, date) {
         /**
-         * if given date is today, get info for yesterday
+         * For given day, we usually get the 
          */
-        if(date instanceof Date) {
-            date = handleDate(date, true);
-        }
+        date = handleDate(date, true);
+        
 
         const accesKey = process.env.ACCESS_KEY;
         const response = await axios.get('/historical', {

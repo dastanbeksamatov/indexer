@@ -29,10 +29,10 @@ async function startIndexer() {
         dialect: "postgres"
     };
     const indexer = await PriceIndexer.create(dbUrl, dbOptions, true, coins, fiats);
-    await indexer.start();
+    await indexer.start('2021-07-27');
 }
 
 startIndexer().catch(err => {
     console.error(err);
     throw new Error(err.message);
-}).finally(() => process.exit());
+});

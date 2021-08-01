@@ -1,7 +1,7 @@
 const { Sequelize } = require("sequelize");
 const {init, coins, fiats, Status} = require("./db");
 const API = require("./service");
-const { handleDate, unixTimeToDate } = require("./utils");
+const { handleDate, unixTimeToDate, isSameDate } = require("./utils");
 
 /**
  * Class that represents price indexer for coins
@@ -15,6 +15,11 @@ class PriceIndexer {
         this.coinSymbols = this._isStringArray(_coins) ? _coins : Object.keys(coins);
         this.fiatSymbols = this._isStringArray(_fiats) ? _fiats : Object.keys(fiats);
     }
+
+    /**
+     * One day represented as milliseconds
+     */
+    static ONE_DAY_AS_MILLIS = 86400000;
 
     /**
      * Create instance of PriceIndexer
@@ -44,23 +49,39 @@ class PriceIndexer {
     }
 
     /**
-     * Start indexing prices
+     * Start indexing prices for a range of days
      * @param {*} symbol Coin symbol
-     * @param {*} date start date
+     * @param {*} date start date - by default now
      * @param {*} samples number of samples
      */
     async start(date = new Date(), samples = 1000) {
-        date = handleDate(date);
-        const yesterday = handleDate(date, true);
-        const isPopulated = await this._checkPopulated(yesterday);
+        if(isSameDate(date, new Date())) {
+            await this.indexDay(date, samples);
+            return ;
+        }
+        const today = new Date();
+        
+        for(let day = new Date(date); day <= today; day.setDate(day.getDate() + 1)) {
+            await this.indexDay(day, samples);
+        }
+        return ;
+    }
+
+    /**
+     * Indexes prices for a certain day
+     * @param {*} day 
+     */
+    async indexDay(day, samples = 1000) {
+        const date = handleDate(day);
+        const isPopulated = await this._checkPopulated(date);
         if(isPopulated) {
-            console.log('already indexed for: ' + yesterday);
+            console.log('already indexed for: ' + date);
             return ;
         }
         try {
-            console.log('start indexing for date: ' + yesterday);
+            console.log('start indexing for date: ' + date);
             console.log('start indexing fiats...');
-            await this.pushFiats(yesterday);
+            await this.pushFiats(date);
 
             console.log('start indexing crypto...' + this.coinSymbols.join(','));
             await Promise.all(this.coinSymbols.map(async (symbol) => {
@@ -71,13 +92,12 @@ class PriceIndexer {
                 await this.pushCoin(symbol, response.data);
             })
             ).then(async () => {
-                await this.syncStatus(yesterday, 1);
+                await this.syncStatus(date, 1);
                 return ;
             })
         } catch (err) {
             return this._handleError(err);
         }
-
     }
     
     /**

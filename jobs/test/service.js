@@ -34,7 +34,6 @@ describe.only("test api service", function() {
         switch(type){
             case 'fiat': {
                 const all = await fiats[symbol].count({where: sequelize.where(sequelize.fn('date', sequelize.col('createdAt')), '=', date)});
-                console.log(`count: ${all}`);
                 return all;
             }
             case 'coin': {
@@ -51,10 +50,10 @@ describe.only("test api service", function() {
         indexer = await PriceIndexer.create(TEST_DB, dbOptions, true, coinList, fiatList);
     })
 
-    it("should index price for yesterday if not specified", async function() {
+    it("should update status for the day if successful", async function() {
         await indexer.start();
 
-        const day = handleDate(new Date(), true);
+        const day = handleDate(new Date());
         const status = await Status.findOne({where: {date: day}});
         
         expect(status.status).to.be.equal(true, "Indexer did not complete successfully");
@@ -62,25 +61,22 @@ describe.only("test api service", function() {
     })
 
     it("should index all returned data from API request", async function() {
-        const day = handleDate(new Date());
-
-        await indexer.start(day, NUMBER_SAMPLES);
+        await indexer.start(new Date(), NUMBER_SAMPLES);
 
         const expectedCounter = {};
         const actualCounter = {};
-
-        const yesterday = handleDate(day, true);
-
+        
+        const today = new Date();
         for (const coin of coinList) {
-            const response = await api.getCoinHistory(coin);
-            const count = await getCount(coin, yesterday, 'coin');
+            const response = await api.getCoinHistory(coin, today);
+            const count = await getCount(coin, today, 'coin');
             expectedCounter[coin] = response.data[coin].length;
             actualCounter[coin] = count;
         }
 
         for (const fiat of fiatList) {
-            const response = await api.getFiatHistory(fiat, yesterday);
-            const count = await getCount(fiat, yesterday, 'fiat');
+            const response = await api.getFiatHistory(fiat, today);
+            const count = await getCount(fiat, today, 'fiat');
             expectedCounter[fiat] = response.data['quotes'][`${fiat}USD`] && 1
             actualCounter[fiat] = count;
         }
@@ -89,6 +85,20 @@ describe.only("test api service", function() {
         console.log(`expected count: ${JSON.stringify(expectedCounter)}`);
 
         expect(actualCounter).to.deep.equal(expectedCounter, 'Indexed object count is not equal to fetched object count');
+    })
+
+    it("indexes from 5 days before", async function() {
+        const today = new Date();
+        let startDay = new Date();
+        startDay.setDate(today.getDate() - 5);
+
+        await indexer.start(startDay);
+        
+        for(let day = new Date(startDay); day <= today; day.setDate(day.getDate() + 1)) {
+            const status = await Status.findOne({where: {date: handleDate(day)}});
+            expect(status.status).to.be.equal(true, "Indexer did not complete successfully for" + day);
+            expect(status.date).to.be.equal(handleDate(day), "Days don't match");
+        }
     })
 
 
