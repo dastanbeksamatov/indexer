@@ -20,7 +20,7 @@ const { coins, fiats } = require("./db");
  * Note: This will by default index prices from yesterday.
  * And since price APIs work with UTC time, it's adviced to run it after UTC midnight.
  * For example, you can schedule to run this script every day at UTC 00:05 am,
- * this way you will have complete price data for yesterday
+ * this way you will have complete price data for past day
  */
 async function startIndexer() {
     const dbUrl = process.env.DB_URL;
@@ -29,10 +29,15 @@ async function startIndexer() {
         dialect: "postgres"
     };
     const indexer = await PriceIndexer.create(dbUrl, dbOptions, true, coins, fiats);
-    await indexer.start('2021-07-27');
+
+    // by default it indexes prices for today
+    // specify start and end dates of indexing like this:
+    // indexer.start(from='2021-01-01', to='2021-07-31');
+
+    await indexer.start();
 }
 
 startIndexer().catch(err => {
     console.error(err);
     throw new Error(err.message);
-});
+}).finally(() => process.exit());

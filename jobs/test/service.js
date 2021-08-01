@@ -61,7 +61,7 @@ describe.only("test api service", function() {
     })
 
     it("should index all returned data from API request", async function() {
-        await indexer.start(new Date(), NUMBER_SAMPLES);
+        await indexer.start();
 
         const expectedCounter = {};
         const actualCounter = {};
@@ -92,7 +92,7 @@ describe.only("test api service", function() {
         let startDay = new Date();
         startDay.setDate(today.getDate() - 5);
 
-        await indexer.start(startDay);
+        await indexer.start(from=startDay);
         
         for(let day = new Date(startDay); day <= today; day.setDate(day.getDate() + 1)) {
             const status = await Status.findOne({where: {date: handleDate(day)}});

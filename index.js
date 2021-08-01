@@ -8,7 +8,7 @@ const bree = new Bree({
 	jobs: [
 		{
 			name: 'price-indexer',
-			interval: 'every 15 seconds',
+			interval: 'every 25 seconds',
 		}
 	]
 })

@@ -51,20 +51,19 @@ class PriceIndexer {
     /**
      * Start indexing prices for a range of days
      * @param {*} symbol Coin symbol
-     * @param {*} date start date - by default now
+     * @param {*} from start date - defaults to today
+     * @param {*} to end date of days to index - defaults to today
      * @param {*} samples number of samples
      */
-    async start(date = new Date(), samples = 1000) {
-        if(isSameDate(date, new Date())) {
-            await this.indexDay(date, samples);
-            return ;
+    async start(from = new Date(), to = new Date(), samples = 1000) {
+        if(isSameDate(from, to)) {
+            await this.indexDay(from, samples);
         }
-        const today = new Date();
+        to = new Date(to);
         
-        for(let day = new Date(date); day <= today; day.setDate(day.getDate() + 1)) {
+        for(let day = new Date(from); day <= to; day.setDate(day.getDate() + 1)) {
             await this.indexDay(day, samples);
         }
-        return ;
     }
 
     /**
