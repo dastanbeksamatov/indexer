@@ -1,7 +1,7 @@
 const axios = require('axios').default;
 const { handleDate } = require('./utils');
 /**
- * @description Class representinng Coincodex API 
+ * @description Class representing API instance for indexer
  */
 class API {
     constructor() {
