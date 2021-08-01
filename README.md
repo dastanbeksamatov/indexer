@@ -40,7 +40,7 @@ One way to run this script is to launch it with `cron-like` scheduler [`bree`](h
 However, for the indexer to run indefinetely, you will need to keep the `NodeJs` script running for as long as you need indexing. For this reason, it is recommended to use `crontab` for job scheduling.
 
 ### crontab  (Recommended) :construction:
-NOTE! Under construction!
+NOTE! Under construction!  
 `cron` also known as `cron job` is a time-based job scheduler.  
 With the use of crontab, we can configure to run our script at certain time every day.
 
