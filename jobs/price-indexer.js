@@ -15,6 +15,13 @@ Iterate trough all symbols once a day:
 const PriceIndexer = require("./indexer");
 const { coins, fiats } = require("./db");
 
+/**
+ * Starts the price indexing script
+ * Note: This will by default index prices from yesterday.
+ * And since price APIs work with UTC time, it's adviced to run it after UTC midnight.
+ * For example, you can schedule to run this script every day at UTC 00:05 am,
+ * this way you will have complete price data for yesterday
+ */
 async function startIndexer() {
     const dbUrl = process.env.DB_URL;
     const dbOptions = {
@@ -28,5 +35,4 @@ async function startIndexer() {
 startIndexer().catch(err => {
     console.error(err);
     throw new Error(err.message);
-    })
-    .finally(() => process.exit());
+}).finally(() => process.exit());

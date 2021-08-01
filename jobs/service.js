@@ -9,7 +9,7 @@ class API {
         this.fiatUrl = 'https://api.currencylayer.com';
     }
     /**
-     * Gets an array coin states of format [[timestamp, price, volume], ...]
+     * Gets an array coin states of format Array<Array<[timestamp, price, volume]>>
      * @param {*} symbol unique symbol of a coin [required]
      * @param {*} date indexing day
      * @param {*} samples number of samples

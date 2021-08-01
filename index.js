@@ -1,9 +1,8 @@
 #!/bin/env sh
 const Bree = require('bree');
-const Cabin = require('cabin');
 
 /**
- * bree instance that generates a cron job with a schedule
+ * bree instance that generates a scheduled cron job
  */
 const bree = new Bree({
 	jobs: [

@@ -8,14 +8,12 @@
   "dependencies": {
     "axios": "0.21.1",
     "bree": "^6.2.1",
-    "cabin": "^9.0.4",
-    "chai": "^4.3.4",
-    "graceful": "^1.0.2",
     "pg": "^8.6.0",
     "sequelize": "^6.6.2"
   },
   "devDependencies": {
     "mocha": "^9.0.2",
+    "chai": "^4.3.4",
     "sequelize-cli": "^6.2.0"
   },
   "scripts": {
