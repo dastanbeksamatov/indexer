@@ -58,7 +58,7 @@ describe.only("test api service", function() {
         const status = await Status.findOne({where: {date: day}});
         
         expect(status.status).to.be.equal(true, "Indexer did not complete successfully");
-        expect(status.date).to.be.equal(day, "Days don't much");
+        expect(status.date).to.be.equal(day, "Days don't match");
     })
 
     it("should index all returned data from API request", async function() {
@@ -82,7 +82,7 @@ describe.only("test api service", function() {
             const response = await api.getFiatHistory(fiat, yesterday);
             const count = await getCount(fiat, yesterday, 'fiat');
             expectedCounter[fiat] = response.data['quotes'][`${fiat}USD`] && 1
-            actualCounter[fiat] = count
+            actualCounter[fiat] = count;
         }
 
         console.log(`actual count: ${JSON.stringify(actualCounter)}`);
