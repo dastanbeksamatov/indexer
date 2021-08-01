@@ -28,6 +28,13 @@ Also, make sure to set `DB_URL` with the valid url of your running `PostgreSQL` 
 
 `export DB_URL=<your-db-url>`
 
+## `PriceIndexer`
+
+Functions:  
+
+- `create` - create new instance of `PriceIndexer`  
+- `start` - start price indexing, specify date range with `from` and `to` parameters
+
 ## Run
 
 `price-indexer` can be run in two ways:
